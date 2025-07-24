@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Bell, User, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
+  const { signOut, user } = useAuth();
+
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -35,11 +38,14 @@ const Header = () => {
             </Button>
             
             <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground hidden md:inline">
+                {user?.email}
+              </span>
               <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                 <User className="h-4 w-4" />
-                <span className="hidden md:inline">Admin TU</span>
+                <span className="hidden md:inline">Admin</span>
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={signOut}>
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>

@@ -1,6 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useStudents } from "@/hooks/useStudents";
+import { usePayments } from "@/hooks/usePayments";
 import { 
   Users, 
   CreditCard, 
@@ -13,21 +15,30 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
-  // Mock data untuk demo
+  const { data: students = [], isLoading: studentsLoading } = useStudents();
+  const { data: payments = [], isLoading: paymentsLoading } = usePayments();
+
+  // Calculate real statistics
   const stats = {
-    totalSiswa: 450,
-    sudahBayar: 320,
-    belumBayar: 130,
-    totalPendapatan: 156000000,
-    tunggakan: 45000000
+    totalSiswa: students.length,
+    sudahBayar: payments.filter(p => p.status === 'paid').length,
+    belumBayar: payments.filter(p => p.status === 'pending' || p.status === 'overdue').length,
+    totalPendapatan: payments
+      .filter(p => p.status === 'paid')
+      .reduce((sum, p) => sum + Number(p.amount), 0),
+    tunggakan: payments
+      .filter(p => p.status === 'overdue')
+      .reduce((sum, p) => sum + Number(p.amount), 0)
   };
 
-  const recentPayments = [
-    { id: 1, nama: "Ahmad Rifki", kelas: "XII IPA 1", bulan: "Januari 2024", jumlah: 350000, status: "Lunas" },
-    { id: 2, nama: "Siti Nurhaliza", kelas: "XI IPS 2", bulan: "Januari 2024", jumlah: 350000, status: "Lunas" },
-    { id: 3, nama: "Budi Santoso", kelas: "X MIPA 3", bulan: "Desember 2023", jumlah: 350000, status: "Tunggakan" },
-    { id: 4, nama: "Rina Kartika", kelas: "XII IPA 2", bulan: "Januari 2024", jumlah: 350000, status: "Lunas" },
-  ];
+  const recentPayments = payments.slice(0, 4).map(payment => ({
+    id: payment.id,
+    nama: payment.students?.name || 'Unknown',
+    kelas: payment.students?.class || 'Unknown',
+    bulan: payment.month_year,
+    jumlah: Number(payment.amount),
+    status: payment.status === 'paid' ? 'Lunas' : 'Tunggakan'
+  }));
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
