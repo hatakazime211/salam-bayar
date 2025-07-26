@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Bell, User, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 
 const Header = () => {
   const { signOut, user } = useAuth();
+  const { data: profile } = useProfile();
 
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -43,7 +45,7 @@ const Header = () => {
               </span>
               <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                 <User className="h-4 w-4" />
-                <span className="hidden md:inline">Admin</span>
+                <span className="hidden md:inline">{profile?.role ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1) : 'User'}</span>
               </Button>
               <Button variant="ghost" size="icon" onClick={signOut}>
                 <LogOut className="h-4 w-4" />

@@ -31,16 +31,28 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!signInEmail || !signInPassword) {
+      return;
+    }
     setIsLoading(true);
-    await signIn(signInEmail, signInPassword);
-    setIsLoading(false);
+    try {
+      await signIn(signInEmail, signInPassword);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!signUpEmail || !signUpPassword || !fullName) {
+      return;
+    }
     setIsLoading(true);
-    await signUp(signUpEmail, signUpPassword, fullName, role);
-    setIsLoading(false);
+    try {
+      await signUp(signUpEmail, signUpPassword, fullName, role);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

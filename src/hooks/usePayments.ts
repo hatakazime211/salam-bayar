@@ -26,7 +26,18 @@ export const usePayments = () => {
       const { data, error } = await supabase
         .from('payments')
         .select(`
-          *,
+          id,
+          student_id,
+          amount,
+          payment_method,
+          payment_date,
+          due_date,
+          month_year,
+          status,
+          notes,
+          processed_by,
+          created_at,
+          updated_at,
           students (
             name,
             class,
@@ -36,6 +47,7 @@ export const usePayments = () => {
         .order('payment_date', { ascending: false });
 
       if (error) {
+        console.error('Error fetching payments:', error);
         toast({
           title: "Error",
           description: "Failed to fetch payments",
@@ -46,6 +58,8 @@ export const usePayments = () => {
 
       return data;
     },
+    retry: 2,
+    staleTime: 3 * 60 * 1000, // 3 minutes
   });
 };
 

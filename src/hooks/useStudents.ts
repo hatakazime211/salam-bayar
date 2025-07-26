@@ -24,10 +24,28 @@ export const useStudents = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('students')
-        .select('*')
+        .select(`
+          id,
+          name,
+          nis,
+          class,
+          academic_year,
+          monthly_fee,
+          scholarship_discount,
+          is_active,
+          parent_id,
+          created_at,
+          updated_at,
+          profiles:parent_id (
+            id,
+            full_name,
+            phone
+          )
+        `)
         .order('name');
 
       if (error) {
+        console.error('Error fetching students:', error);
         toast({
           title: "Error",
           description: "Failed to fetch students",
@@ -38,6 +56,8 @@ export const useStudents = () => {
 
       return data as Student[];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
